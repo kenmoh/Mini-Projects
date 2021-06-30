@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./booking.css" />
+    <title>Bus Travel Booking App</title>
+  </head>
+  <body>
+    <main>
+      <h1>Book a seat</h1>
+      <h4 class="available">We have seat 2, 4, 8 Left</h4>
+      <small class="message hide"></small>
+      <section class="col-1">
+        <div class="seat seat--1">1</div>
+        <div class="seat seat--2">2</div>
+        <div class="seat seat--3">7</div>
+        <div class="seat seat--4">8</div>
+      </section>
+      <section class="col-2">
+        <div class="seat seat--5 taken middle">3</div>
+        <div class="seat seat--6">6</div>
+        <div class="seat seat--7">9</div>
+      </section>
+      <section class="col-3">
+        <div class="seat--0"><small>+</small></div>
+        <div class="seat seat--9">4</div>
+        <div class="seat seat--10">5</div>
+        <div class="seat seat--11">10</div>
+      </section>
+      <div class="btn">Submit</div>
+      <br /><br /><br />
+      <h4>Keys</h4>
+      <section>
+        <div class="key driver"></div>
+        <p>Driver's Seat</p>
+        <div class="key booked"></div>
+        <p>Taken</p>
+        <div class="key selected"></div>
+        <p>Seleted</p>
+        <div class="key"></div>
+        <p>Available</p>
+      </section>
+    </main>
+    <script src="./booking.js"></script>
+  </body>
+</html>
