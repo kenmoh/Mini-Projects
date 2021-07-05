@@ -60,9 +60,14 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 
-const displayTransactions = function (transactions) {
+const displayTransactions = function (transactions, sort = false) {
     transactionsContainer.innerHTML = '';
-    transactions.forEach((trans, index) => {
+    const trans = sort ? transactions.slice().sort((a, b) => a - b) : transactions;
+
+    /* To goggle between highest to lowest sort
+    const trans = sort ? transactions.slice().sort((a, b) => a - b) : transactions.slice().sort((a, b) => b - a);
+    */
+    trans.forEach((trans, index) => {
         const typeOfTransaction = trans > 0 ? 'deposit' : 'withdrawal';
         const html = `
             <div class="transactions__row">
@@ -173,6 +178,7 @@ btnLogin.addEventListener('click', e => {
     UI(currentUser);
 });
 
+// Transfer Functionality
 btnTransfer.addEventListener('click', e => {
     e.preventDefault();
     const amount = Number(inputTransferAmount.value);
@@ -190,6 +196,20 @@ btnTransfer.addEventListener('click', e => {
     }
 });
 
+// Loan application functionality
+btnLoan.addEventListener('click', e => {
+    e.preventDefault();
+
+    const amount = Number(inputLoanAmount.value);
+    if (amount > 0 && currentUser.transactions.some(trans => trans >= amount * 0.1)) {
+        currentUser.transactions.push(amount);
+        // update the UI
+        UI(currentUser);
+    }
+    inputLoanAmount.value = '';
+});
+
+// Close Account Functionality
 btnClose.addEventListener('click', e => {
     e.preventDefault();
     if (inputCloseUsername.value === currentUser.username && Number(inputClosePin.value) === currentUser.pin) {
@@ -200,4 +220,13 @@ btnClose.addEventListener('click', e => {
         appContainer.style.opacity = 0;
     }
     inputCloseUsername.value = inputClosePin.value = '';
+});
+
+
+// Sorting Functionality
+let sorted = false;
+btnSort.addEventListener('click', e => {
+    e.preventDefault();
+    displayTransactions(currentUser.transactions, !sorted);
+    sorted = !sorted;
 });
