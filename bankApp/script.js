@@ -30,6 +30,7 @@ const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
 const accounts = [account1, account2, account3, account4];
 
 // Elements
+const alert = document.querySelector('.alert');
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
 const labelBalance = document.querySelector('.balance__value');
@@ -68,7 +69,7 @@ const displayTransactions = function (transactions) {
                 <div class="transactions__type transactions__type--${typeOfTransaction}">
                     ${index + 1} ${typeOfTransaction}
                 </div>
-                <div class="transactions__value">${trans} EUR</div>
+                <div class="transactions__value">${trans} NGN</div>
             </div>
         `;
         transactionsContainer.insertAdjacentHTML('afterbegin', html);
@@ -78,28 +79,31 @@ const euroToUsd = 1.1;
 const transactionsUSD = transactions.map(trans => trans * euroToUsd);
 
 
-const displayBalance = function (transactions) {
-    const balance = transactions.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = `${balance} EUR`;
+const displayBalance = function (account) {
+    account.balance = account.transactions.reduce((acc, cur) => acc + cur, 0);
+    labelBalance.textContent = `${account.balance} NGN`;
+    const receiver = account.receiver;
+    const sender = account.sender;
+
 };
 
-const displaySummary = function (transactions) {
-    const incomes = transactions
+const displaySummary = function (account) {
+    const incomes = account.transactions
         .filter(trans => trans > 0)
         .reduce((acc, trans) => acc + trans, 0);
-    labelSumIn.textContent = `${incomes} EUR`;
+    labelSumIn.textContent = `${incomes} NGN`;
 
-    const outcomes = transactions
+    const outcomes = account.transactions
         .filter(trans => trans < 0)
         .reduce((acc, trans) => acc + trans, 0);
-    labelSumOut.textContent = `${Math.abs(outcomes)} EUR`;
+    labelSumOut.textContent = `${Math.abs(outcomes)} NGN`;
 
-    const interest = transactions
+    const interest = account.transactions
         .filter(trans => trans > 0)
-        .map(deposit => deposit * 1.2 / 100)
+        .map(deposit => deposit * account.interestRate / 100)
         .filter(int => int > 1)
         .reduce((acc, int) => acc + int, 0);
-    labelSumInterest.innerText = `${interest} EUR`;
+    labelSumInterest.innerText = `${interest} NGN`;
 };
 
 console.log(transactions);
@@ -126,6 +130,18 @@ const createUserName = function (accs) {
 };
 createUserName(accounts);
 
+const UI = function (user) {
+
+    // Display Transactions
+    displayTransactions(user.transactions);
+
+    // Display Balance
+    displayBalance(user);
+
+    // Display Summary
+    displaySummary(user);
+
+};
 
 const deposit = transactions.filter(trans => trans > 0);
 const withdrawal = transactions.filter(trans => trans < 0);
@@ -149,16 +165,39 @@ btnLogin.addEventListener('click', e => {
     appContainer.style.opacity = 100;
 
     // Clear Input
-    // inputLoginUsername.value = inputLoginPin.value = '';
-    inputLoginPin.style.display = 'none';
-    inputLoginUsername.style.display = 'none';
+    inputLoginUsername.value = inputLoginPin.value = '';
+    // inputLoginPin.style.display = 'none';
+    // inputLoginUsername.style.display = 'none';
 
-    // Display Transactions
-    displayTransactions(currentUser.transactions);
+    // Update UI
+    UI(currentUser);
+});
 
-    // Display Balance
-    displayBalance(currentUser.transactions);
+btnTransfer.addEventListener('click', e => {
+    e.preventDefault();
+    const amount = Number(inputTransferAmount.value);
+    const receiver = accounts.find(acc => acc.username === inputTransferTo.value);
 
-    // Display Summary
-    displaySummary(currentUser.transactions);
+    inputTransferAmount.value = inputTransferTo.value = '';
+
+    if (amount > 0 && receiver && currentUser.balance >= amount && receiver?.username !== currentUser.username) {
+        const sender = currentUser.owner;
+        console.log('Sender: ', sender, 'Receiver: ', receiver);
+        currentUser.transactions.push(-amount);
+        receiver.transactions.push(amount);
+        // Update UI
+        UI(currentUser);
+    }
+});
+
+btnClose.addEventListener('click', e => {
+    e.preventDefault();
+    if (inputCloseUsername.value === currentUser.username && Number(inputClosePin.value) === currentUser.pin) {
+        const index = accounts.findIndex(acc => acc.username === currentUser.username);
+        // Delete user account
+        accounts.splice(index, 1);
+        // Hide the UI
+        appContainer.style.opacity = 0;
+    }
+    inputCloseUsername.value = inputClosePin.value = '';
 });
